@@ -2,7 +2,9 @@ import boto3
 from sql_queries import create_table_queries, drop_table_queries
 import os
 from config import *
-import utils
+import aws_utils
+import psycopg2
+import argparse
 
 
 def create_database():
@@ -13,30 +15,37 @@ def create_database():
     return None
 
 
-def drop_tables():
+def drop_tables(cur, conn):
     """
     This function drops all the tables in the database
     :param cur:
     :param conn:
     :return:
     """
+    for query in drop_table_queries:
+        cur.execute(query)
+        conn.commit()
     return None
 
 
-def create_tables():
+def create_tables(cur, conn):
     """
     This function creates all the tables in the database
     :param cur:
     :param conn:
     :return:
     """
+    for query in create_table_queries:
+        cur.execute(query)
+        conn.commit()
     return None
 
 
 def main():
-
-    roleArn = utils.create_iam_role()
-    DWH_ENDPOINT = utils.create_redshift_cluster(roleArn)
+    parser = argparse.ArgumentParser(description='Redshift host')
+    args = parser.parse_args()
+    parser.add_argument('host', type=str, help='type an action')
+    DWH_ENDPOINT = args.host
 
     # create postgres connection
     conn_string = "postgresql://{}:{}@{}:{}/{}".format(
@@ -46,7 +55,11 @@ def main():
                     DWH_PORT,
                     DWH_DB
     )
-    return None
+    conn = psycopg2.connect(conn_string)
+    cur = conn.cursor()
+    drop_tables(cur, conn)
+    create_tables(cur, conn)
+    conn.close()
 
 
 if __name__ == "__main__":

@@ -1,5 +1,6 @@
 # DROP TABLES
 # ----------------------------------------------------------------------
+staging_table_drop = "DROP TABLE IF EXISTS staging"
 songplay_table_drop = "DROP TABLE IF EXISTS songplays CASCADE;"
 user_table_drop = "DROP TABLE IF EXISTS users;"
 song_table_drop = "DROP TABLE IF EXISTS songs;"
@@ -8,7 +9,28 @@ time_table_drop = "DROP TABLE IF EXISTS time;"
 
 # CREATE TABLES
 # ----------------------------------------------------------------------
-songplay_table_create = ("""
+staging_table_create = """
+ CREATE TABLE IF NOT EXISTS staging (
+    artist VARCHAR(50), 
+    auth VARCHAR(50), 
+    firstName VARCHAR(50), 
+    gender VARCHAR(10), 
+    itemInSession INTEGER, 
+    lastName VARCHAR(50), 
+    length NUMERIC, 
+    level VARCHAR(10), 
+    location VARCHAR(100), 
+    method VARCHAR(10),
+    page VARCHAR(50), 
+    registration NUMERIC, 
+    sessionId INTEGER, 
+    song VARCHAR(50),
+    status INTEGER,
+    ts TIMESTAMP,
+    userAgent VARCHAR(100),
+    userId INTEGER);    
+"""
+songplay_table_create = """
  CREATE TABLE IF NOT EXISTS songplays (
     songplay_id  IDENTITY(0,1) PRIMARY KEY, 
     start_time TIMESTAMP NOT NULL, 
@@ -21,36 +43,36 @@ songplay_table_create = ("""
     user_agent VARCHAR(50),
  CONSTRAINT songplayuser 
  UNIQUE(start_time, user_id, level, session_id));
-""")
+"""
 
-user_table_create = ("""
+user_table_create = """
  CREATE TABLE IF NOT EXISTS users (
     user_id VARCHAR(50) PRIMARY KEY, 
     first_name VARCHAR(50), 
     last_name VARCHAR(50), 
     gender VARCHAR(10), 
     level VARCHAR(10) NOT NULL);
-""")
+"""
 
-song_table_create = ("""
+song_table_create = """
  CREATE TABLE IF NOT EXISTS songs (
     song_id VARCHAR(50) PRIMARY KEY, 
     title VARCHAR(100) NOT NULL, 
     artist_id VARCHAR(50) NOT NULL, 
     year INTEGER, 
     duration NUMERIC NOT NULL);
-""")
+"""
 
-artist_table_create = ("""
+artist_table_create = """
  CREATE TABLE IF NOT EXISTS artists (
     artist_id VARCHAR(50) PRIMARY KEY, 
     name VARCHAR(100) NOT NULL, 
     location VARCHAR, 
     latitude NUMERIC, 
     longitude NUMERIC);
-""")
+"""
 
-time_table_create = ("""
+time_table_create = """
  CREATE TABLE IF NOT EXISTS time (
     start_time TIMESTAMP UNIQUE NOT NULL, 
     hour INTEGER, 
@@ -59,7 +81,7 @@ time_table_create = ("""
     month INTEGER, 
     year INTEGER, 
     week_day VARCHAR);
-""")
+"""
 
 # INSERT RECORDS
 # ----------------------------------------------------------------------

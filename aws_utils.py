@@ -20,7 +20,10 @@ def create_iam_role():
                                   AssumeRolePolicyDocument=json.dumps(
                                       {
                                           'Statement': [
-                                              {'Action': 'sts.AssumeRole',
+                                              {'Action': [
+                                                  "s3:GetObject",
+                                                  "s3:ListBucket"
+                                              ],
                                                'Effect': 'Allow',
                                                'Principal': {'Service': 'redshift.amazonaws.com'}}
                                           ],
@@ -59,3 +62,30 @@ def create_redshift_cluster(roleArn):
         return response['Cluster']['Endpoint']['Address']
 
 
+def create_bucket(bucket_name):
+    """ Create an Amazon S3 bucket
+
+    :param bucket_name: Unique string name
+    :return: True if bucket is created, else False
+    """
+    s3 = boto3.client('s3')
+    try:
+        s3.create_bucket(Bucket=bucket_name)
+    except ClientError as e:
+        print(f'ERROR: {e}')
+        return False
+    return True
+
+
+def upload_bucket(bucket_name, key, output_name):
+    """
+
+    :param bucket_name: Your S3 BucketName
+    :param key: Original Name and type of the file you want to upload
+                into s3
+    :param output_name: Output file name(The name you want to give to
+                        the file after we upload to s3)
+    :return:
+    """
+    s3 = boto3.client('s3')
+    s3.upload_file(key, bucket_name, output_name)

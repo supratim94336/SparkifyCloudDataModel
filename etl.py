@@ -1,9 +1,11 @@
 import boto3
 import pandas as pd
 from sql_queries import *
+from config import *
+import psycopg2
+import argparse
 
-
-def process_song_file(table_name, s3_path, iam_role, json_path):
+def process_song_file():
     """
     i/p: cursor, filepath
     returns: None
@@ -11,36 +13,12 @@ def process_song_file(table_name, s3_path, iam_role, json_path):
     extracts the necessary attributes needed for the songs and the
     artists table, transforms it and uploads it onto the relational
     database
-    copy category
-    from 's3://mybucket/category_object_paths.json'
-    iam_role 'arn:aws:iam::0123456789012:role/MyRedshiftRole'
-    json 's3://mybucket/category_jsonpath.json';
-    category_jsonpath.json looks like
-    {
-        "jsonpaths": [
-            "$['start_time']",
-            "$['user_id']",
-            "$['level']",
-            "$['song_id']",
-            "$['artist_id']",
-            "$['session_id']",
-            "$['location']",
-            "$['user_agent']"
-        ]
-    }
     """
-    copy_song_command = """
-                        copy {} 
-                        from '{}' 
-                        credentials 'aws_iam_role={}'
-                        json '{}'
-                        region 'us-west-2';
-                        """.format(table_name, s3_path, iam_role,
-                                   json_path)
+
     return None
 
 
-def process_log_file(cur, filepath):
+def process_log_file():
     """
     i/p: cursor, filepath
     returns: None
@@ -49,26 +27,54 @@ def process_log_file(cur, filepath):
     user activity table, transforms it and loads it on the relational
     database
     """
+
+
     return None
 
 
-def process_data(cur, conn, filepath, func):
+def process_data_staging(cur, iam_role):
     """
     i/p: cursor, connection, filepath and ETL function
     returns: None
     This is a helper function for extracting, transforming and loading
     data onto the relational database
     """
-    bucketName = "Your S3 BucketName"
-    Key = "Original Name and type of the file you want to upload into s3"
-    outPutname = "Output file name(The name you want to give to the file after we upload to s3)"
-
-    s3 = boto3.client('s3')
-    s3.upload_file(Key, bucketName, outPutname)
+    copy_song_command = """
+                        copy {} 
+                        from '{}' 
+                        credentials 'aws_iam_role={}'
+                        format as json 'auto'
+                        region 'us-west-2';
+                        """.format(DWH_STAGING_TABLE, S3_BUCKET,
+                                   iam_role)
+    cur.execute(copy_song_command)
     return None
 
 
 def main():
+    parser = argparse.ArgumentParser(description='Configurations')
+    args = parser.parse_args()
+    parser.add_argument('host', type=str, help='redshift host')
+    parser.add_argument('credentials', type=str, help='userId')
+
+    DWH_ENDPOINT = args.host
+    iam_role = args.user
+
+    # create postgres connection
+    conn_string = "postgresql://{}:{}@{}:{}/{}".format(
+        DWH_DB_USER,
+        DWH_DB_PASSWORD,
+        DWH_ENDPOINT,
+        DWH_PORT,
+        DWH_DB
+    )
+    conn = psycopg2.connect(conn_string)
+    cur = conn.cursor()
+    cur.execute("CREATE SCHEMA IF NOT EXISTS {}".format(DWH_SCHEMA))
+    cur.commit()
+    cur.execute("SET search_path to {}".format(DWH_SCHEMA))
+    cur.commit()
+    process_data_staging(cur, iam_role)
     return None
 
 
