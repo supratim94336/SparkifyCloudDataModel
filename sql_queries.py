@@ -11,58 +11,58 @@ time_table_drop = "DROP TABLE IF EXISTS time;"
 songplay_table_create = ("""
  CREATE TABLE IF NOT EXISTS songplays (
     songplay_id  IDENTITY(0,1) PRIMARY KEY, 
-    start_time timestamp NOT NULL, 
-    user_id varchar(50) NOT NULL, 
-    level varchar(10) NOT NULL, 
-    song_id varchar(50), 
-    artist_id varchar(50), 
-    session_id int NOT NULL, 
-    location varchar(100), 
-    user_agent varchar(50),
+    start_time TIMESTAMP NOT NULL, 
+    user_id VARCHAR(50) NOT NULL, 
+    level VARCHAR(10) NOT NULL, 
+    song_id VARCHAR(50), 
+    artist_id VARCHAR(50), 
+    session_id INTEGER NOT NULL, 
+    location VARCHAR(100), 
+    user_agent VARCHAR(50),
  CONSTRAINT songplayuser 
  UNIQUE(start_time, user_id, level, session_id));
 """)
 
 user_table_create = ("""
  CREATE TABLE IF NOT EXISTS users (
-    user_id varchar(50) PRIMARY KEY, 
-    first_name varchar(50), 
-    last_name varchar(50), 
-    gender varchar(10), 
-    level varchar(10) NOT NULL);
+    user_id VARCHAR(50) PRIMARY KEY, 
+    first_name VARCHAR(50), 
+    last_name VARCHAR(50), 
+    gender VARCHAR(10), 
+    level VARCHAR(10) NOT NULL);
 """)
 
 song_table_create = ("""
  CREATE TABLE IF NOT EXISTS songs (
-    song_id varchar(50) PRIMARY KEY, 
-    title varchar(100) NOT NULL, 
-    artist_id varchar(50) NOT NULL, 
-    year int, 
-    duration numeric NOT NULL);
+    song_id VARCHAR(50) PRIMARY KEY, 
+    title VARCHAR(100) NOT NULL, 
+    artist_id VARCHAR(50) NOT NULL, 
+    year INTEGER, 
+    duration NUMERIC NOT NULL);
 """)
 
 artist_table_create = ("""
  CREATE TABLE IF NOT EXISTS artists (
-    artist_id varchar(50) PRIMARY KEY, 
-    name varchar(100) NOT NULL, 
-    location varchar, 
-    latitude numeric, 
-    longitude numeric);
+    artist_id VARCHAR(50) PRIMARY KEY, 
+    name VARCHAR(100) NOT NULL, 
+    location VARCHAR, 
+    latitude NUMERIC, 
+    longitude NUMERIC);
 """)
 
 time_table_create = ("""
  CREATE TABLE IF NOT EXISTS time (
-    start_time timestamp UNIQUE NOT NULL, 
-    hour int, 
-    day int, 
-    week int, 
-    month int, 
-    year int, 
-    week_day varchar);
+    start_time TIMESTAMP UNIQUE NOT NULL, 
+    hour INTEGER, 
+    day INTEGER, 
+    week INTEGER, 
+    month INTEGER, 
+    year INTEGER, 
+    week_day VARCHAR);
 """)
 
 # INSERT RECORDS
-
+# ----------------------------------------------------------------------
 songplay_table_insert = ("""
 INSERT INTO songplays (start_time, user_id, level, song_id, artist_id,
  session_id, location, user_agent) VALUES (%s,%s,%s,%s,%s,%s,%s,%s)
