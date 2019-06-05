@@ -70,10 +70,6 @@ def main():
     )
     conn = psycopg2.connect(conn_string)
     cur = conn.cursor()
-    cur.execute("CREATE SCHEMA IF NOT EXISTS {}".format(DWH_SCHEMA))
-    cur.commit()
-    cur.execute("SET search_path to {}".format(DWH_SCHEMA))
-    cur.commit()
     process_data_staging(cur, iam_role)
     return None
 
