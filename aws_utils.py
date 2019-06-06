@@ -6,35 +6,36 @@ import time
 
 
 def create_iam_role():
-    iam = boto3.client('iam',
-                       region_name="us-west-2",
-                       aws_access_key=KEY,
-                       aws_secret_access_key=SECRET
+    iam = boto3.client('iam', aws_access_key_id=KEY,
+                       aws_secret_access_key=SECRET,
+                       region_name='us-west-2'
                        )
+    print("1.1 creating role")
     try:
-        response = iam.create_role(Path='/',
-                                  RoleName=DWH_IAM_ROLE_NAME,
-                                  Description="Allows Redshift clusters to "
-                                              "call AWS services on your "
-                                              "behalf.",
-                                  AssumeRolePolicyDocument=json.dumps(
-                                      {
-                                          'Statement': [
-                                              {'Action': [
-                                                  "s3:GetObject",
-                                                  "s3:ListBucket"
-                                              ],
-                                               'Effect': 'Allow',
-                                               'Principal': {'Service': 'redshift.amazonaws.com'}}
-                                          ],
-                                          'Version': '2012-10-17'
-                                      }
-                                  )
-                                 )
+        iam.create_role(Path='/',
+                        RoleName=DWH_IAM_ROLE_NAME,
+                        Description="Allows Redshift clusters to call AWS services on your behalf.",
+                        AssumeRolePolicyDocument=json.dumps(
+                            {'Statement': [{'Action': 'sts:AssumeRole',
+                              'Effect': 'Allow',
+                              'Principal': {'Service': 'redshift.amazonaws.com'}}],
+                             'Version': '2012-10-17'})
+                        )
+
     except ClientError as e:
         print(f'ERROR: {e}')
-    else:
-        return response['Role']['Arn']
+
+    print("1.2 Attaching Policy")
+    try:
+        iam.attach_role_policy(RoleName=DWH_IAM_ROLE_NAME,
+                               PolicyArn="arn:aws:iam::aws:policy/AmazonS3ReadOnlyAccess"
+                               )['ResponseMetadata']['HTTPStatusCode']
+    except ClientError as e:
+        print(f'ERROR: {e}')
+
+    print("1.3 Get the IAM role ARN")
+    roleArn = iam.get_role(RoleName=DWH_IAM_ROLE_NAME)['Role']['Arn']
+    return roleArn
 
 
 def create_redshift_cluster(roleArn):
