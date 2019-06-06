@@ -3,7 +3,7 @@ import time
 
 
 def animate():
-    chars = "|/—\|"
+    chars = r"|/—\|"
     for char in chars:
         sys.stdout.write('\r' + 'Please Wait ...' + char)
         time.sleep(.1)
