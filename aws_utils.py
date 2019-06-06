@@ -73,7 +73,7 @@ def create_redshift_cluster(roleArn):
             ['Clusters'][0]['ClusterStatus'] != 'available':
         utils.animate()
 
-    print("1.4 Cluster is created successfully ...")
+    print("\r1.4 Cluster is created successfully ...")
     return redshift.describe_clusters(
         ClusterIdentifier=DWH_CLUSTER_IDENTIFIER)\
     ['Clusters'][0]['Endpoint']['Address']
@@ -101,7 +101,7 @@ def delete_redshift_cluster():
                 ['Clusters'][0]['ClusterStatus'] == 'deleting':
             utils.animate()
     except:
-        print("1.4 Cluster is deleted successfully ...")
+        print("\r1.4 Cluster is deleted successfully ...")
     return None
 
 
