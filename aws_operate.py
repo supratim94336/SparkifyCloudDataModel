@@ -15,4 +15,5 @@ if action == "create":
     print('DWH_ENDPOINT={}'.format(DWH_ENDPOINT))
 elif action == "destroy":
     print('destroying the cluster')
+    aws_utils.delete_redshift_cluster()
 

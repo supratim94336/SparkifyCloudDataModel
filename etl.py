@@ -1,9 +1,7 @@
-import boto3
-import pandas as pd
-from sql_queries import *
 from config import *
 import psycopg2
 import argparse
+
 
 def process_song_file():
     """
@@ -14,7 +12,6 @@ def process_song_file():
     artists table, transforms it and uploads it onto the relational
     database
     """
-
     return None
 
 
@@ -27,8 +24,6 @@ def process_log_file():
     user activity table, transforms it and loads it on the relational
     database
     """
-
-
     return None
 
 

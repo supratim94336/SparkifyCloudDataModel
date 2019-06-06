@@ -1,18 +1,7 @@
-import boto3
 from sql_queries import create_table_queries, drop_table_queries
-import os
 from config import *
-import aws_utils
 import psycopg2
 import argparse
-
-
-def create_database():
-    """
-    This function create databases test and production databases
-    :return:
-    """
-    return None
 
 
 def drop_tables(cur, conn):
