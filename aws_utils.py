@@ -2,12 +2,12 @@ import boto3
 from config import *
 import json
 from botocore.exceptions import ClientError
-import time
 import utils
 
 
 def create_iam_role():
-    iam = boto3.client('iam', aws_access_key_id=KEY,
+    iam = boto3.client('iam',
+                       aws_access_key_id=KEY,
                        aws_secret_access_key=SECRET,
                        region_name='us-west-2'
                        )

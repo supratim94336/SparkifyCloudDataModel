@@ -1,6 +1,7 @@
 # DROP TABLES
 # ----------------------------------------------------------------------
-staging_table_drop = "DROP TABLE IF EXISTS staging"
+log_staging_table_drop = "DROP TABLE IF EXISTS log_staging"
+song_staging_table_drop = "DROP TABLE IF EXISTS song_staging"
 songplay_table_drop = "DROP TABLE IF EXISTS songplays CASCADE;"
 user_table_drop = "DROP TABLE IF EXISTS users;"
 song_table_drop = "DROP TABLE IF EXISTS songs;"
@@ -9,8 +10,8 @@ time_table_drop = "DROP TABLE IF EXISTS time;"
 
 # CREATE TABLES
 # ----------------------------------------------------------------------
-staging_table_create = """
- CREATE TABLE IF NOT EXISTS staging (
+log_staging_table_create = """
+ CREATE TABLE IF NOT EXISTS log_staging (
     artist VARCHAR(50), 
     auth VARCHAR(50), 
     firstName VARCHAR(50), 
@@ -30,9 +31,24 @@ staging_table_create = """
     userAgent VARCHAR(100),
     userId INTEGER);    
 """
+
+song_staging_table_create = """
+ CREATE TABLE IF NOT EXISTS song_staging (
+    num_songs INTEGER, 
+    artist_id VARCHAR(50), 
+    artist_latitude NUMERIC, 
+    artist_longitude NUMERIC, 
+    artist_location VARCHAR(100), 
+    artist_name VARCHAR(100), 
+    song_id NUMERIC, 
+    title VARCHAR(50), 
+    duration NUMERIC, 
+    year INTEGER);    
+"""
+
 songplay_table_create = """
  CREATE TABLE IF NOT EXISTS songplays (
-    songplay_id  IDENTITY(0,1) PRIMARY KEY, 
+    songplay_id INTEGER IDENTITY(0,1) PRIMARY KEY, 
     start_time TIMESTAMP NOT NULL, 
     user_id VARCHAR(50) NOT NULL, 
     level VARCHAR(10) NOT NULL, 
@@ -138,10 +154,10 @@ SELECT s.song_id, s.artist_id FROM songs s
 
 # QUERY LISTS
 
-create_table_queries = [songplay_table_create, user_table_create,
+create_table_queries = [log_staging_table_create, song_staging_table_create, songplay_table_create, user_table_create,
                         song_table_create, artist_table_create,
                         time_table_create]
-drop_table_queries = [songplay_table_drop, user_table_drop,
+drop_table_queries = [log_staging_table_drop, song_staging_table_drop, songplay_table_drop, user_table_drop,
                       song_table_drop, artist_table_drop,
                       time_table_drop]
 

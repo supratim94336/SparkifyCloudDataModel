@@ -4,6 +4,20 @@ import psycopg2
 import argparse
 
 
+def create_database(cur, conn):
+    """
+    This function drops all the tables in the database
+    :param cur:
+    :param conn:
+    :return:
+    """
+    cur.execute("CREATE SCHEMA IF NOT EXISTS {}".format(DWH_SCHEMA))
+    conn.commit()
+    cur.execute("SET search_path to {}".format(DWH_SCHEMA))
+    conn.commit()
+    return None
+
+
 def drop_tables(cur, conn):
     """
     This function drops all the tables in the database
@@ -46,10 +60,7 @@ def main():
     )
     conn = psycopg2.connect(conn_string)
     cur = conn.cursor()
-    cur.execute("CREATE SCHEMA IF NOT EXISTS {}".format(DWH_SCHEMA))
-    cur.commit()
-    cur.execute("SET search_path to {}".format(DWH_SCHEMA))
-    cur.commit()
+    create_database(cur, conn)
     drop_tables(cur, conn)
     create_tables(cur, conn)
     conn.close()
