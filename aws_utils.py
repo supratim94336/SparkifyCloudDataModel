@@ -39,28 +39,59 @@ def create_iam_role():
 
 
 def create_redshift_cluster(roleArn):
+    print("1.1 Client is created ...")
     redshift = boto3.client('redshift',
                             region_name="us-west-2",
-                            aws_access_key=KEY,
+                            aws_access_key_id=KEY,
                             aws_secret_access_key=SECRET
                             )
     try:
-        response = redshift.create_cluster(
+        print("1.2 Cluster config is being created ...")
+        redshift.create_cluster(
+            # HW
             ClusterType=DWH_CLUSTER_TYPE,
             NodeType=DWH_NODE_TYPE,
-            NumberOfNodes=DWH_NUM_NODES,
+            NumberOfNodes=int(DWH_NUM_NODES),
+
+            # Identifiers & Credentials
             DBName=DWH_DB,
             ClusterIdentifier=DWH_CLUSTER_IDENTIFIER,
-            MasterUserName=DWH_DB_USER,
+            MasterUsername=DWH_DB_USER,
             MasterUserPassword=DWH_DB_PASSWORD,
-            IamRoles=[roleArn]
-        )
+
+            # Roles (for s3 access)
+            IamRoles=[roleArn])
     except ClientError as e:
         print(f'ERROR: {e}')
-    else:
-        while response['Cluster']['ClusterStatus'] != 'available':
+
+    while redshift.describe_clusters(ClusterIdentifier=DWH_CLUSTER_IDENTIFIER)['Clusters'][0]['ClusterStatus'] != 'available':
+        print("1.3 Cluster is being created ...")
+        time.sleep(10)
+    print("1.4 Cluster is created successfully ...")
+    return redshift.describe_clusters(ClusterIdentifier=DWH_CLUSTER_IDENTIFIER)['Clusters'][0]['Endpoint']['Address']
+
+
+def delete_redshift_cluster():
+    print("1.1 Client is created ...")
+    redshift = boto3.client('redshift',
+                            region_name="us-west-2",
+                            aws_access_key_id=KEY,
+                            aws_secret_access_key=SECRET
+                            )
+    print("1.2 Cluster is identified ...")
+    try:
+        redshift.delete_cluster(ClusterIdentifier=DWH_CLUSTER_IDENTIFIER,
+                                SkipFinalClusterSnapshot=True)
+    except ClientError as e:
+        print(f'ERROR: {e}')
+
+    try:
+        while redshift.describe_clusters(ClusterIdentifier=DWH_CLUSTER_IDENTIFIER)['Clusters'][0]['ClusterStatus'] == 'deleting':
+            print("1.3 Cluster is being deleted ...")
             time.sleep(10)
-        return response['Cluster']['Endpoint']['Address']
+    except:
+        print("1.4 Cluster is deleted successfully ...")
+    return None
 
 
 def create_bucket(bucket_name):
