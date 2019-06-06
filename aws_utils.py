@@ -3,6 +3,7 @@ from config import *
 import json
 from botocore.exceptions import ClientError
 import time
+import utils
 
 
 def create_iam_role():
@@ -12,24 +13,26 @@ def create_iam_role():
                        )
     print("1.1 creating role")
     try:
-        iam.create_role(Path='/',
-                        RoleName=DWH_IAM_ROLE_NAME,
-                        Description="Allows Redshift clusters to call AWS services on your behalf.",
-                        AssumeRolePolicyDocument=json.dumps(
-                            {'Statement': [{'Action': 'sts:AssumeRole',
-                              'Effect': 'Allow',
-                              'Principal': {'Service': 'redshift.amazonaws.com'}}],
-                             'Version': '2012-10-17'})
-                        )
+        iam.create_role(
+            Path='/',
+            RoleName=DWH_IAM_ROLE_NAME,
+            Description="Allows Redshift to call AWS Services.",
+            AssumeRolePolicyDocument=json.dumps(
+                {'Statement': [{'Action': 'sts:AssumeRole',
+                  'Effect': 'Allow',
+                  'Principal': {'Service': 'redshift.amazonaws.com'}}],
+                 'Version': '2012-10-17'})
+            )
 
     except ClientError as e:
         print(f'ERROR: {e}')
 
     print("1.2 Attaching Policy")
     try:
-        iam.attach_role_policy(RoleName=DWH_IAM_ROLE_NAME,
-                               PolicyArn="arn:aws:iam::aws:policy/AmazonS3ReadOnlyAccess"
-                               )['ResponseMetadata']['HTTPStatusCode']
+        iam.attach_role_policy(
+            RoleName=DWH_IAM_ROLE_NAME,
+            PolicyArn="arn:aws:iam::aws:policy/AmazonS3ReadOnlyAccess")\
+                        ['ResponseMetadata']['HTTPStatusCode']
     except ClientError as e:
         print(f'ERROR: {e}')
 
@@ -64,11 +67,16 @@ def create_redshift_cluster(roleArn):
     except ClientError as e:
         print(f'ERROR: {e}')
 
-    while redshift.describe_clusters(ClusterIdentifier=DWH_CLUSTER_IDENTIFIER)['Clusters'][0]['ClusterStatus'] != 'available':
-        print("1.3 Cluster is being created ...")
-        time.sleep(10)
+    print("1.3 Cluster is being created ...")
+    while redshift.describe_clusters(
+            ClusterIdentifier=DWH_CLUSTER_IDENTIFIER)\
+            ['Clusters'][0]['ClusterStatus'] != 'available':
+        utils.animate()
+
     print("1.4 Cluster is created successfully ...")
-    return redshift.describe_clusters(ClusterIdentifier=DWH_CLUSTER_IDENTIFIER)['Clusters'][0]['Endpoint']['Address']
+    return redshift.describe_clusters(
+        ClusterIdentifier=DWH_CLUSTER_IDENTIFIER)\
+    ['Clusters'][0]['Endpoint']['Address']
 
 
 def delete_redshift_cluster():
@@ -80,15 +88,18 @@ def delete_redshift_cluster():
                             )
     print("1.2 Cluster is identified ...")
     try:
-        redshift.delete_cluster(ClusterIdentifier=DWH_CLUSTER_IDENTIFIER,
-                                SkipFinalClusterSnapshot=True)
+        redshift.delete_cluster(
+            ClusterIdentifier=DWH_CLUSTER_IDENTIFIER,
+            SkipFinalClusterSnapshot=True)
     except ClientError as e:
         print(f'ERROR: {e}')
 
     try:
-        while redshift.describe_clusters(ClusterIdentifier=DWH_CLUSTER_IDENTIFIER)['Clusters'][0]['ClusterStatus'] == 'deleting':
-            print("1.3 Cluster is being deleted ...")
-            time.sleep(10)
+        print("1.3 Cluster is being deleted ...")
+        while redshift.describe_clusters(
+                ClusterIdentifier=DWH_CLUSTER_IDENTIFIER)\
+                ['Clusters'][0]['ClusterStatus'] == 'deleting':
+            utils.animate()
     except:
         print("1.4 Cluster is deleted successfully ...")
     return None
