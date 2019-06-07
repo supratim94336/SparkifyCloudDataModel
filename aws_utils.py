@@ -3,6 +3,7 @@ from config import *
 import json
 from botocore.exceptions import ClientError
 import utils
+from smart_open import open
 
 
 def create_iam_role():
@@ -154,3 +155,28 @@ def list_bucket(bucket_name, prefix):
     for obj in bucket.objects.filter(Prefix=prefix):
         files.append(obj)
     return files
+
+
+def s3_read(s3_path):
+    """
+    Read a file from an S3 source.
+
+    Parameters
+    ----------
+    source : str
+        Path starting with s3://, e.g. 's3://bucket-name/key/foo.bar'
+    profile_name : str, optional
+        AWS profile
+
+    Returns
+    -------
+    content : bytes
+
+    botocore.exceptions.NoCredentialsError
+        Botocore is not able to find your credentials. Either specify
+        profile_name or add the environment variables AWS_ACCESS_KEY_ID,
+        AWS_SECRET_ACCESS_KEY and AWS_SESSION_TOKEN.
+        See https://boto3.readthedocs.io/en/latest/guide/configuration.html
+    """
+    for line in open(s3_path, 'rb', encoding='utf-8'):
+        print(line.decode('utf8'))

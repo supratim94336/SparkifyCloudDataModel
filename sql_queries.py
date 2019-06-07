@@ -14,22 +14,22 @@ log_staging_table_create = """
  CREATE TABLE IF NOT EXISTS log_staging (
     artist VARCHAR(50), 
     auth VARCHAR(50), 
-    firstname VARCHAR(50), 
+    firstName VARCHAR(50), 
     gender VARCHAR(10), 
-    iteminsession INTEGER, 
-    lastname VARCHAR(50), 
+    iteminSession INTEGER, 
+    lastName VARCHAR(50), 
     length NUMERIC, 
     level VARCHAR(10), 
     location VARCHAR(100), 
     method VARCHAR(10),
     page VARCHAR(50), 
     registration NUMERIC, 
-    sessionid INTEGER, 
+    sessionId INTEGER, 
     song VARCHAR(50),
     status INTEGER,
     ts TIMESTAMP,
-    useragent VARCHAR(100),
-    userid INTEGER);    
+    userAgent VARCHAR(100),
+    userId INTEGER);    
 """
 
 song_staging_table_create = """
@@ -46,100 +46,123 @@ song_staging_table_create = """
     year INTEGER);    
 """
 
+# facts ----------------------------------------------------------------
 songplay_table_create = """
  CREATE TABLE IF NOT EXISTS songplays (
     songplay_id INTEGER IDENTITY(0,1) PRIMARY KEY, 
-    start_time TIMESTAMP NOT NULL, 
-    user_id VARCHAR(50) NOT NULL, 
+    start_time TIMESTAMP NOT NULL REFERENCES time(start_time) sortkey, 
+    user_id VARCHAR(50) NOT NULL REFERENCES users(user_id), 
     level VARCHAR(10) NOT NULL, 
-    song_id VARCHAR(50), 
-    artist_id VARCHAR(50), 
+    song_id VARCHAR(50) NOT NULL REFERENCES songs(song_id) distkey, 
+    artist_id VARCHAR(50) NOT NULL REFERENCES artists(artist_id), 
     session_id INTEGER NOT NULL, 
-    location VARCHAR(100), 
-    user_agent VARCHAR(50),
- CONSTRAINT songplayuser 
- UNIQUE(start_time, user_id, level, session_id));
+    location VARCHAR(100) NOT NULL, 
+    user_agent VARCHAR(50) NOT NULL);
 """
 
+# dimensions -----------------------------------------------------------
 user_table_create = """
  CREATE TABLE IF NOT EXISTS users (
-    user_id VARCHAR(50) PRIMARY KEY, 
+    user_id VARCHAR(50) PRIMARY KEY sortkey, 
     first_name VARCHAR(50), 
     last_name VARCHAR(50), 
     gender VARCHAR(10), 
-    level VARCHAR(10) NOT NULL);
+    level VARCHAR(10) NOT NULL)
+    diststyle ALL;
 """
 
 song_table_create = """
  CREATE TABLE IF NOT EXISTS songs (
-    song_id VARCHAR(50) PRIMARY KEY, 
+    song_id VARCHAR(50) PRIMARY KEY distkey, 
     title VARCHAR(100) NOT NULL, 
     artist_id VARCHAR(50) NOT NULL, 
-    year INTEGER, 
+    year INTEGER NOT NULL,
     duration NUMERIC NOT NULL);
 """
 
 artist_table_create = """
  CREATE TABLE IF NOT EXISTS artists (
-    artist_id VARCHAR(50) PRIMARY KEY, 
+    artist_id VARCHAR(50) PRIMARY KEY sortkey, 
     name VARCHAR(100) NOT NULL, 
-    location VARCHAR, 
-    latitude NUMERIC, 
-    longitude NUMERIC);
+    location VARCHAR NOT NULL, 
+    latitude NUMERIC NOT NULL, 
+    longitude NUMERIC NOT NULL)
+    diststyle ALL;
 """
 
 time_table_create = """
  CREATE TABLE IF NOT EXISTS time (
-    start_time TIMESTAMP UNIQUE NOT NULL, 
-    hour INTEGER, 
-    day INTEGER, 
-    week INTEGER, 
-    month INTEGER, 
-    year INTEGER, 
-    week_day VARCHAR);
+    start_time TIMESTAMP UNIQUE NOT NULL sortkey, 
+    hour INTEGER NOT NULL, 
+    day INTEGER NOT NULL, 
+    week INTEGER NOT NULL, 
+    month INTEGER NOT NULL, 
+    year INTEGER NOT NULL, 
+    week_day VARCHAR)
+    diststyle ALL;
 """
 
 # INSERT RECORDS
 # ----------------------------------------------------------------------
 songplay_table_insert = ("""
 INSERT INTO songplays (start_time, user_id, level, song_id, artist_id,
- session_id, location, user_agent) VALUES (%s,%s,%s,%s,%s,%s,%s,%s)
- ON CONFLICT ON CONSTRAINT songplayuser
- DO NOTHING;
+ session_id, location, user_agent) 
+ SELECT DISTINCT lgs.ts, 
+                 lsg.userId, 
+                 nvl(lgs.level, 'empty'), 
+                 ssg.song_id, 
+                 lsg.artistId,
+                 lsg.sessionId, 
+                 nvl(lgs.location, 'empty'), 
+                 nvl(lgs.userAgent, 'empty')
+ FROM log_staging lgs
+ INNER JOIN song_staging ssg ON lgs.song = ssg.title
+ WHERE lgs.page = 'NextSong';
 """)
 
 user_table_insert = ("""
 INSERT INTO users (user_id, first_name, last_name, gender, level) 
- VALUES (%s,%s,%s,%s,%s)
- ON CONFLICT (user_id) 
- DO
- UPDATE
-   SET level = EXCLUDED.level, first_name = EXCLUDED.first_name,
-   last_name = EXCLUDED.last_name, gender = EXCLUDED.gender;
+  SELECT DISTINCT lgs.userId, 
+                  nvl(lgs.firstName, 'empty'), 
+                  nvl(lgs.lastName, 'empty'),  
+                  nvl(lgs.gender, 'empty'),  
+                  nvl(lgs.level, 'empty'), 
+  FROM log_staging lgs
+  WHERE lgs.userId IS NOT NULL;
 """)
 
 song_table_insert = ("""
 INSERT INTO songs (song_id, title, artist_id, year, duration) 
- VALUES (%s,%s,%s,%s,%s)
- ON CONFLICT (song_id) 
- DO
- NOTHING;
+ SELECT DISTINCT ssg.song_id, 
+                 ssg.title, 
+                 ssg.artist_id, 
+                 ssg.year, 
+                 nvl(ssg.duration, 0.0)
+  FROM song_staging ssg
 """)
 
 artist_table_insert = ("""
 INSERT INTO artists (artist_id, name, location, latitude, longitude) 
- VALUES (%s,%s,%s,%s,%s)
- ON CONFLICT (artist_id) 
- DO
- NOTHING;
+ SELECT DISTINCT ssg.artist_id, 
+                 ssg.artist_name, 
+                 nvl(ssg.artist_location, 'empty'), 
+                 nvl(ssg.artist_latitude, 0.0), 
+                 nvl(ssg.artist_longitude, 0.0)
+ FROM song_staging ssg
+ WHERE ssg.artist_id IS NOT NULL;
 """)
 
 time_table_insert = ("""
-INSERT INTO time (start_time, hour, day, week, month, year, week_day) 
- VALUES (%s,%s,%s,%s,%s,%s,%s)
- ON CONFLICT (start_time)
- DO
- NOTHING;
+INSERT INTO time (start_time, hour, day, week, month, year, weekday)
+ SELECT DISTINCT se.ts, 
+                 DATE_PART(hour, se.ts) :: INTEGER, 
+                 DATE_PART(day, se.ts) :: INTEGER, 
+                 DATE_PART(week, se.ts) :: INTEGER,
+                 DATE_PART(month, se.ts) :: INTEGER,
+                 DATE_PART(year, se.ts) :: INTEGER,
+                 DATE_PART(dow, se.ts) :: INTEGER
+ FROM log_staging lsg
+ WHERE lsg.page = 'NextSong';
 """)
 
 # FIND SONGS

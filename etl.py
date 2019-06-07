@@ -105,10 +105,10 @@ def process_data_staging(cur, conn, iam_role):
                         credentials '{}'
                         emptyasnull
                         blanksasnull
-                        json 'auto'
+                        format as json {}
                         timeformat 'auto';
                         """.format(DWH_LOG_STAGING_TABLE, S3_BUCKET_LOG_JSON_PATH,
-                                   iam_role)
+                                   iam_role, LOG_JSON_FORMAT)
     cur.execute(copy_song_command)
 
     cur.execute("SET search_path to {}".format(DWH_SCHEMA))
