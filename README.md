@@ -1,10 +1,11 @@
-## Sparkify Cloud Data Model with AWS
 <p align="center">
-    <img align="center" src="https://upload.wikimedia.org/wikipedia/commons/thumb/9/93/Amazon_Web_Services_Logo.svg/512px-Amazon_Web_Services_Logo.svg.png" width=108>
-    <img align="center" src="http://www.freelogovectors.net/wp-content/uploads/2018/07/amazon-redshift-logo-600x234.png" width=178 align="right">
+    <img align="right" src="https://upload.wikimedia.org/wikipedia/commons/thumb/9/93/Amazon_Web_Services_Logo.svg/512px-Amazon_Web_Services_Logo.svg.png" width=108>
+    <img align="left" src="http://www.freelogovectors.net/wp-content/uploads/2018/07/amazon-redshift-logo-600x234.png" width=178 align="right">
 </p>
 
-Data Modelling with Amazon Redshift
+## Sparkify Cloud Data Model with AWS
+
+### Data Modelling with Amazon Redshift
 - This data-ware-hosuing project is based on Amazon Web Services (aws)
 - The reason behind choosing a cloud-data-ware-housing model is to better
 manage the infrastructure and provide more flexibility in terms of money and resources
