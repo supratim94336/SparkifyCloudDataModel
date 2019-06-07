@@ -2,7 +2,7 @@
 
 
 ## Sparkify Cloud Data Model with AWS
-Udacity project for Cloud Data Warehousing with Amazon Redshift and AWS
+Udacity project on Cloud Data Warehousing with Amazon Redshift and AWS
 
 ### Data Modelling with Amazon Redshift
 - This data-ware-housing project is based on Amazon Web Services (aws)
