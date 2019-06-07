@@ -153,7 +153,7 @@ INSERT INTO artists (artist_id, name, location, latitude, longitude)
 """)
 
 time_table_insert = ("""
-INSERT INTO time (start_time, hour, day, week, month, year, weekday)
+INSERT INTO time (start_time, hour, day, week, month, year, week_day)
  SELECT DISTINCT se.ts, 
                  DATE_PART(hour, se.ts) :: INTEGER, 
                  DATE_PART(day, se.ts) :: INTEGER, 

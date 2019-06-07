@@ -10,8 +10,10 @@ Udacity project on Cloud Data Warehousing with Amazon Redshift and AWS
 manage the infrastructure and provide more flexibility in terms of money and resources
 - The infrastructure as code (IAC) model used in this project is very easy and requires
 very few manual efforts to set up
-- Currently, we have a Star Database architecture with Artists, Users, Time, and Songs are used as dimension tables
- and Songplays is used as Fact table
+- Currently, we have a Star Schema architecture with Artists, Users, 
+Time, and Songs are used as dimension tables and Songplays is used as 
+Fact table because Songplays will have events that happened and 
+different dimensions will give us perspective from different angles
 - The distribution and sorting of different tables across the nodes help
 the query-computing very un-intense and requires very less span of time
 - The code is written in Python SDK of aws (boto3), just by using the
