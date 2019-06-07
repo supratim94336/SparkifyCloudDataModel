@@ -25,6 +25,8 @@ def drop_tables(cur, conn):
     :param conn:
     :return:
     """
+    cur.execute("SET search_path to {}".format(DWH_SCHEMA))
+    conn.commit()
     for query in drop_table_queries:
         cur.execute(query)
         conn.commit()
@@ -38,6 +40,8 @@ def create_tables(cur, conn):
     :param conn:
     :return:
     """
+    cur.execute("SET search_path to {}".format(DWH_SCHEMA))
+    conn.commit()
     for query in create_table_queries:
         cur.execute(query)
         conn.commit()
