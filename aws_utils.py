@@ -132,3 +132,25 @@ def upload_bucket(bucket_name, key, output_name):
     """
     s3 = boto3.client('s3')
     s3.upload_file(key, bucket_name, output_name)
+
+
+def list_bucket(bucket_name, prefix):
+    """
+
+    :param bucket_name: Your S3 BucketName
+    :param key: Original Name and type of the file you want to upload
+                into s3
+    :param output_name: Output file name(The name you want to give to
+                        the file after we upload to s3)
+    :return:
+    """
+    files = []
+    s3 = boto3.resource('s3',
+                        region_name="us-west-2",
+                        aws_access_key_id=KEY,
+                        aws_secret_access_key=SECRET
+                        )
+    bucket = s3.Bucket(bucket_name)
+    for obj in bucket.objects.filter(Prefix=prefix):
+        files.append(obj)
+    return files
