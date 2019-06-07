@@ -16,7 +16,7 @@ very few manual efforts to set up
 the query-computing very un-intense and requires very less span of time
 - The code is written in Python SDK of aws (boto3), just by using the
   code, and following the instructions one can set up a
-  mini-cloud-datawarehousing architecture very easily and in minutes
+  mini cloud data warehousing architecture very easily and in minutes
 
 ### Getting Started
 Download the project:
