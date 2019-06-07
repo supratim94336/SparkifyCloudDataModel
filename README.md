@@ -3,10 +3,12 @@
     <img align="left" src="http://www.freelogovectors.net/wp-content/uploads/2018/07/amazon-redshift-logo-600x234.png" width=178 align="right">
 </p>
 
+----
 ## Sparkify Cloud Data Model with AWS
+Udacity project for Cloud Data Warehousing with Amazon Redshift and AWS 
 
 ### Data Modelling with Amazon Redshift
-- This data-ware-hosuing project is based on Amazon Web Services (aws)
+- This data-ware-housing project is based on Amazon Web Services (aws)
 - The reason behind choosing a cloud-data-ware-housing model is to better
 manage the infrastructure and provide more flexibility in terms of money and resources
 - The infrastructure as code (IAC) model used in this project is very easy and requires
