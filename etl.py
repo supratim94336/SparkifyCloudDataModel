@@ -35,21 +35,25 @@ def process_data_staging(cur, iam_role):
     data onto the relational database
     """
     copy_song_command = """
-                        copy {} 
+                        copy {}
                         from '{}' 
-                        credentials 'aws_iam_role={}'
-                        format as json 'auto'
-                        region 'us-west-2';
+                        credentials '{}'
+                        emptyasnull
+                        blanksasnull
+                        json 'auto'
+                        timeformat 'auto';
                         """.format(DWH_LOG_STAGING_TABLE, S3_BUCKET_LOG_JSON_PATH,
                                    iam_role)
     cur.execute(copy_song_command)
 
     copy_song_command = """
-                            copy {} 
-                            from '{}' 
-                            credentials 'aws_iam_role={}'
-                            format as json 'auto'
-                            region 'us-west-2';
+                        copy {}
+                        from '{}' 
+                        credentials '{}'
+                        emptyasnull
+                        blanksasnull
+                        json 'auto'
+                        timeformat 'auto';
                             """.format(DWH_SONG_STAGING_TABLE, S3_BUCKET_SONG_JSON_PATH,
                                        iam_role)
     cur.execute(copy_song_command)

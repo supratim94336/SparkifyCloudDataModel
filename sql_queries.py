@@ -1,7 +1,7 @@
 # DROP TABLES
 # ----------------------------------------------------------------------
-log_staging_table_drop = "DROP TABLE IF EXISTS log_staging"
-song_staging_table_drop = "DROP TABLE IF EXISTS song_staging"
+log_staging_table_drop = "DROP TABLE IF EXISTS log_staging CASCADE"
+song_staging_table_drop = "DROP TABLE IF EXISTS song_staging CASCADE"
 songplay_table_drop = "DROP TABLE IF EXISTS songplays CASCADE;"
 user_table_drop = "DROP TABLE IF EXISTS users;"
 song_table_drop = "DROP TABLE IF EXISTS songs;"
@@ -14,22 +14,22 @@ log_staging_table_create = """
  CREATE TABLE IF NOT EXISTS log_staging (
     artist VARCHAR(50), 
     auth VARCHAR(50), 
-    firstName VARCHAR(50), 
+    firstname VARCHAR(50), 
     gender VARCHAR(10), 
-    itemInSession INTEGER, 
-    lastName VARCHAR(50), 
+    iteminsession INTEGER, 
+    lastname VARCHAR(50), 
     length NUMERIC, 
     level VARCHAR(10), 
     location VARCHAR(100), 
     method VARCHAR(10),
     page VARCHAR(50), 
     registration NUMERIC, 
-    sessionId INTEGER, 
+    sessionid INTEGER, 
     song VARCHAR(50),
     status INTEGER,
     ts TIMESTAMP,
-    userAgent VARCHAR(100),
-    userId INTEGER);    
+    useragent VARCHAR(100),
+    userid INTEGER);    
 """
 
 song_staging_table_create = """
