@@ -11,32 +11,28 @@ def process_data_staging(cur, conn, iam_role):
     This is a helper function for extracting, transforming and loading
     data onto the relational database
     """
-    cur.execute("SET search_path to {}".format(DWH_SCHEMA))
-    conn.commit()
-    copy_log_command = """
-                        copy {}
-                        from '{}' 
-                        credentials 'aws_iam_role={}'
-                        emptyasnull
-                        blanksasnull
-                        format as json '{}'
-                        timeformat 'auto';
-                        """.format(DWH_LOG_STAGING_TABLE,
-                                   S3_BUCKET_LOG_JSON_PATH,
-                                   iam_role, LOG_JSON_FORMAT)
+
+    copy_log_command = """COPY {}.{} 
+                          FROM '{}' 
+                          iam_role '{}' 
+                          region 'us-west-2' 
+                          FORMAT AS JSON '{}' 
+                          timeformat 'epochmillisecs'""".format(
+            DWH_SCHEMA, DWH_LOG_STAGING_TABLE, S3_BUCKET_LOG_JSON_PATH,
+            iam_role, LOG_JSON_FORMAT)
+
     cur.execute(copy_log_command)
     conn.commit()
-    cur.execute("SET search_path to {}".format(DWH_SCHEMA))
-    conn.commit()
+
     copy_song_command = """
-                        copy {}
-                        from '{}' 
-                        credentials 'aws_iam_role={}'
-                        emptyasnull
-                        blanksasnull
-                        json 'auto'
-                        timeformat 'auto';
-                            """.format(DWH_SONG_STAGING_TABLE,
+                        COPY {}.{}
+                        FROM '{}' 
+                        iam_role '{}'
+                        region 'us-west-2'
+                        JSON 'auto'
+                        timeformat 'epochmillisecs';
+                            """.format(DWH_SCHEMA,
+                                       DWH_SONG_STAGING_TABLE,
                                        S3_BUCKET_SONG_JSON_PATH,
                                        iam_role)
     cur.execute(copy_song_command)
@@ -79,7 +75,7 @@ def main():
     conn = psycopg2.connect(conn_string)
     cur = conn.cursor()
     process_data_staging(cur, conn, iam_role)
-    insert_data_into_tables(conn, cur)
+    insert_data_into_tables(cur, conn)
     conn.close()
     return None
 
