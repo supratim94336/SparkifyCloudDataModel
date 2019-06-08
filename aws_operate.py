@@ -18,6 +18,8 @@ def main():
     elif action == "stop":
         print('destroying the cluster')
         aws_utils.delete_redshift_cluster()
+        print('detaching  role')
+        aws_utils.detach_iam_role()
 
 
 if __name__ == "__main__":

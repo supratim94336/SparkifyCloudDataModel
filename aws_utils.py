@@ -174,3 +174,14 @@ def s3_read(s3_path):
     """
     for line in open(s3_path, 'rb', encoding='utf-8'):
         print(line.decode('utf8'))
+
+
+def detach_iam_role():
+    iam = boto3.client('iam',
+                       aws_access_key_id=KEY,
+                       aws_secret_access_key=SECRET,
+                       region_name='us-west-2'
+                       )
+    iam.detach_role_policy(RoleName=DWH_IAM_ROLE_NAME,
+                           PolicyArn="arn:aws:iam::aws:policy/AmazonS3ReadOnlyAccess")
+    iam.delete_role(RoleName=DWH_IAM_ROLE_NAME)
