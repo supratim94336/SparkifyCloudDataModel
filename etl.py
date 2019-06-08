@@ -66,7 +66,7 @@ def main():
     args = parser.parse_args()
 
     DWH_ENDPOINT = args.host
-    iam_role = args.user
+    iam_role = args.credentials
 
     # create postgres connection
     conn_string = "postgresql://{}:{}@{}:{}/{}".format(
