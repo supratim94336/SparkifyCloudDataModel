@@ -64,6 +64,10 @@ conda create -y -n <conda-env-name> python==3.6
 conda install -f -y -q -n <conda-env-name> -c conda-forge --file requirements.txt
 [source activate/ conda activate] <conda-env-name>
 ```
+
+Step 3: Change file name of dwh_dummy_file.cfg to dwh.cfg and insert the
+key and secret from previous steps
+
 ##### Executing the creation and extraction scripts
 *Note: Step 0 and Step 3 are optional if you already created your Redshift
 cluster and also created an iam role with read access to
