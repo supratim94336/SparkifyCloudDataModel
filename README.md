@@ -112,7 +112,8 @@ ORDER BY count DESC, s.title ASC
 - The Tester.ipynb notebook is there to test your data with different
 queries (already some pre-written there)
 - The connection to the cluster is already written, you just have to
-execute block by block to start the cluster and run the queries
+    - fill up your cluster end point and iam role
+    - execute block by block to run the queries
 
 ### Authors
 * **Supratim Das** - *Initial work*
