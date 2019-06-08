@@ -4,7 +4,7 @@ import psycopg2
 import argparse
 
 
-def create_database(cur, conn):
+def create_schema(cur, conn):
     """
     This function drops all the tables in the database
     :param cur:
@@ -50,8 +50,8 @@ def create_tables(cur, conn):
 
 def main():
     parser = argparse.ArgumentParser(description='Redshift host')
+    parser.add_argument('--host', type=str, help='type an action')
     args = parser.parse_args()
-    parser.add_argument('host', type=str, help='type an action')
     DWH_ENDPOINT = args.host
 
     # create postgres connection
@@ -64,7 +64,7 @@ def main():
     )
     conn = psycopg2.connect(conn_string)
     cur = conn.cursor()
-    create_database(cur, conn)
+    create_schema(cur, conn)
     drop_tables(cur, conn)
     create_tables(cur, conn)
     conn.close()

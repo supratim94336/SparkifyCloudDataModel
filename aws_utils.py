@@ -7,6 +7,10 @@ from smart_open import open
 
 
 def create_iam_role():
+    """
+    This function creates an iam role based on your config
+    :return:
+    """
     iam = boto3.client('iam',
                        aws_access_key_id=KEY,
                        aws_secret_access_key=SECRET,
@@ -43,6 +47,11 @@ def create_iam_role():
 
 
 def create_redshift_cluster(roleArn):
+    """
+    This function creates a cluster on your behalf
+    :param roleArn:
+    :return:
+    """
     print("1.1 Client is created ...")
     redshift = boto3.client('redshift',
                             region_name="us-west-2",
@@ -81,6 +90,10 @@ def create_redshift_cluster(roleArn):
 
 
 def delete_redshift_cluster():
+    """
+    This function deletes a cluster
+    :return:
+    """
     print("1.1 Client is created ...")
     redshift = boto3.client('redshift',
                             region_name="us-west-2",
@@ -107,8 +120,8 @@ def delete_redshift_cluster():
 
 
 def create_bucket(bucket_name):
-    """ Create an Amazon S3 bucket
-
+    """
+    This function create an Amazon S3 bucket
     :param bucket_name: Unique string name
     :return: True if bucket is created, else False
     """
@@ -123,7 +136,7 @@ def create_bucket(bucket_name):
 
 def upload_bucket(bucket_name, key, output_name):
     """
-
+    This function uploads files onto a s3 bucket
     :param bucket_name: Your S3 BucketName
     :param key: Original Name and type of the file you want to upload
                 into s3
@@ -137,13 +150,10 @@ def upload_bucket(bucket_name, key, output_name):
 
 def list_bucket(bucket_name, prefix):
     """
-
-    :param bucket_name: Your S3 BucketName
-    :param key: Original Name and type of the file you want to upload
-                into s3
-    :param output_name: Output file name(The name you want to give to
-                        the file after we upload to s3)
-    :return:
+    This function lists files in a bucket
+    :param bucket_name:
+    :param prefix:
+    :return: files
     """
     files = []
     s3 = boto3.resource('s3',
@@ -159,24 +169,8 @@ def list_bucket(bucket_name, prefix):
 
 def s3_read(s3_path):
     """
-    Read a file from an S3 source.
-
-    Parameters
-    ----------
-    source : str
-        Path starting with s3://, e.g. 's3://bucket-name/key/foo.bar'
-    profile_name : str, optional
-        AWS profile
-
-    Returns
-    -------
-    content : bytes
-
-    botocore.exceptions.NoCredentialsError
-        Botocore is not able to find your credentials. Either specify
-        profile_name or add the environment variables AWS_ACCESS_KEY_ID,
-        AWS_SECRET_ACCESS_KEY and AWS_SESSION_TOKEN.
-        See https://boto3.readthedocs.io/en/latest/guide/configuration.html
+    This function reads data from a s3 path
+    :param s3_path: s3 path from where you want to read data
     """
     for line in open(s3_path, 'rb', encoding='utf-8'):
         print(line.decode('utf8'))

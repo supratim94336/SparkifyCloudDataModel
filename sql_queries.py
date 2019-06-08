@@ -179,11 +179,11 @@ SELECT s.song_id, s.artist_id FROM songs s
 
 create_table_queries = [log_staging_table_create,
                         song_staging_table_create,
-                        songplay_table_create,
                         user_table_create,
                         song_table_create,
                         artist_table_create,
-                        time_table_create]
+                        time_table_create,
+                        songplay_table_create]
 insert_table_queries = [user_table_insert,
                         song_table_insert,
                         artist_table_insert,

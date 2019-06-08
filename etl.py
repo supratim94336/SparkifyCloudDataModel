@@ -13,31 +13,34 @@ def process_data_staging(cur, conn, iam_role):
     """
     cur.execute("SET search_path to {}".format(DWH_SCHEMA))
     conn.commit()
-    copy_song_command = """
+    copy_log_command = """
                         copy {}
                         from '{}' 
-                        credentials '{}'
+                        credentials 'aws_iam_role={}'
                         emptyasnull
                         blanksasnull
-                        format as json {}
+                        format as json '{}'
                         timeformat 'auto';
-                        """.format(DWH_LOG_STAGING_TABLE, S3_BUCKET_LOG_JSON_PATH,
+                        """.format(DWH_LOG_STAGING_TABLE,
+                                   S3_BUCKET_LOG_JSON_PATH,
                                    iam_role, LOG_JSON_FORMAT)
-    cur.execute(copy_song_command)
-
+    cur.execute(copy_log_command)
+    conn.commit()
     cur.execute("SET search_path to {}".format(DWH_SCHEMA))
     conn.commit()
     copy_song_command = """
                         copy {}
                         from '{}' 
-                        credentials '{}'
+                        credentials 'aws_iam_role={}'
                         emptyasnull
                         blanksasnull
                         json 'auto'
                         timeformat 'auto';
-                            """.format(DWH_SONG_STAGING_TABLE, S3_BUCKET_SONG_JSON_PATH,
+                            """.format(DWH_SONG_STAGING_TABLE,
+                                       S3_BUCKET_SONG_JSON_PATH,
                                        iam_role)
     cur.execute(copy_song_command)
+    conn.commit()
     return None
 
 
@@ -58,9 +61,9 @@ def insert_data_into_tables(cur, conn):
 
 def main():
     parser = argparse.ArgumentParser(description='Configurations')
+    parser.add_argument('--host', type=str, help='redshift host')
+    parser.add_argument('--credentials', type=str, help='userId')
     args = parser.parse_args()
-    parser.add_argument('host', type=str, help='redshift host')
-    parser.add_argument('credentials', type=str, help='userId')
 
     DWH_ENDPOINT = args.host
     iam_role = args.user
@@ -77,7 +80,7 @@ def main():
     cur = conn.cursor()
     process_data_staging(cur, conn, iam_role)
     insert_data_into_tables(conn, cur)
-
+    conn.close()
     return None
 
 

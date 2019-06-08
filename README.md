@@ -73,22 +73,22 @@ Amazon S3 manually*
 iam_role in aws having read access to Amazon S3 and attached to the
 created cluster
 ```bash
-$ python aws_operate.py start
+$ python aws_operate.py --action start
 ```
 **Step 1**: Run the below code to create tables in your Redshift database
 in aws
 ```bash
-$ python create_table.py host <cluster_endpoint_address>
+$ python create_table.py --host <cluster_endpoint_address>
 ```
 **Step 2**: Run the below code to populate your Redshift database
 in aws
 ```bash
-$ python etl.py host <cluster_endpoint_address> credentials <iam_role>
+$ python etl.py host --host <cluster_endpoint_address> --credentials <iam_role>
 ```
 **Step 3**: Run the below code to destroy your Redshift database and
 detach iam_role from the cluster in aws
 ```bash
-$ python aws_operate.py stop
+$ python aws_operate.py --action stop
 ```
 
 ### About the data
@@ -99,12 +99,13 @@ Log Data is generated artificially
 Check: https://github.com/Interana/eventsim
 
 ### Example Queries
-For the most popular songs over the years
+For the most popular songs over the time
 ```
-SELECT year, title, count(*) as count
-FROM songplays
-GROUP BY year, title
-ORDER BY count DESC, title ASC, year DESC
+SELECT s.title, count(*) as count
+FROM sparkify.songplays sp
+INNER JOIN sparkify.songs s ON s.song_id = sp.song_id
+GROUP BY s.title
+ORDER BY count DESC, s.title ASC
 ```
 
 ### View and Analyze
