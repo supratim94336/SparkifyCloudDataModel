@@ -19,6 +19,11 @@ the query-computing very un-intense and requires very less span of time
 - The code is written in Python SDK of aws (boto3), just by using the
   code, and following the instructions one can set up a
   mini cloud data warehousing architecture very easily and in minutes
+  
+### The Star Schema that we are going to design here
+
+![alt text](img/schema.png)
+
 
 ### Getting Started
 Download the project:
@@ -103,7 +108,8 @@ Log Data is generated artificially
 Check: https://github.com/Interana/eventsim
 
 ### Example Queries
-For the most popular songs over the time
+For the most popular songs over the time (considering your schema name 
+is sparkify)
 ```
 SELECT s.title, count(*) as count
 FROM sparkify.songplays sp
@@ -111,7 +117,16 @@ INNER JOIN sparkify.songs s ON s.song_id = sp.song_id
 GROUP BY s.title
 ORDER BY count DESC, s.title ASC
 ```
-
+For the most popular artists and their songs over the time (considering 
+your schema name is sparkify)
+```
+SELECT ar.name, s.title, count(*) as count
+FROM sparkify.songplays sp
+INNER JOIN sparkify.songs s ON s.song_id = sp.song_id
+INNER JOIN sparkify.artists ar ON ar.artist_id = sp.artist_id
+GROUP BY ar.name, s.title
+ORDER BY count DESC, ar.name, s.title ASC;
+```
 ### View and Analyze
 - The Tester.ipynb notebook is there to test your data with different
 queries (already some pre-written there)

@@ -86,7 +86,7 @@ artist_table_create = """
     artist_id TEXT PRIMARY KEY distkey, 
     name TEXT NOT NULL, 
     location TEXT NOT NULL, 
-    lattitude FLOAT8 NOT NULL, 
+    latitude FLOAT8 NOT NULL, 
     longitude FLOAT8 NOT NULL)
 """
 
@@ -104,7 +104,8 @@ time_table_create = """
 # INSERT RECORDS
 # ----------------------------------------------------------------------
 songplay_table_insert = ("""
-INSERT INTO sparkify.songplays (start_time, user_id, level, song_id, artist_id,
+INSERT INTO sparkify.songplays (start_time, user_id, level, song_id, 
+artist_id,
  session_id, location, user_agent) 
  SELECT DISTINCT lgs.ts, 
                  lgs.userId, 
@@ -120,7 +121,8 @@ INSERT INTO sparkify.songplays (start_time, user_id, level, song_id, artist_id,
 """)
 
 user_table_insert = ("""
-INSERT INTO sparkify.users (user_id, first_name, last_name, gender, level) 
+INSERT INTO sparkify.users (user_id, first_name, last_name, gender, 
+level) 
   SELECT DISTINCT lgs.userId, 
                   nvl(lgs.firstName, 'empty'), 
                   nvl(lgs.lastName, 'empty'),  
@@ -141,7 +143,8 @@ INSERT INTO sparkify.songs (song_id, title, artist_id, year, duration)
 """)
 
 artist_table_insert = ("""
-INSERT INTO sparkify.artists (artist_id, name, location, latitude, longitude) 
+INSERT INTO sparkify.artists (artist_id, name, location, latitude, 
+longitude) 
  SELECT DISTINCT ssg.artist_id, 
                  ssg.artist_name, 
                  nvl(ssg.artist_location, 'empty'), 
@@ -152,7 +155,8 @@ INSERT INTO sparkify.artists (artist_id, name, location, latitude, longitude)
 """)
 
 time_table_insert = ("""
-INSERT INTO sparkify.time (start_time, hour, day, week, month, year, week_day)
+INSERT INTO sparkify.time (start_time, hour, day, week, month, year, 
+weekday)
  SELECT DISTINCT lgs.ts, 
                  DATE_PART(hour, lgs.ts) :: INTEGER, 
                  DATE_PART(day, lgs.ts) :: INTEGER, 
@@ -164,18 +168,8 @@ INSERT INTO sparkify.time (start_time, hour, day, week, month, year, week_day)
  WHERE lgs.page = 'NextSong';
 """)
 
-# FIND SONGS
-# you'll need to get the song ID and artist ID by querying the songs
-# and artists tables to find matches based on song title, artist name,
-# and song duration time
-song_select = ("""
-SELECT s.song_id, s.artist_id FROM songs s
- JOIN artists a ON s.artist_id=a.artist_id
- WHERE s.title = %s AND a.name=%s AND s.duration=%s;
-""")
 
 # QUERY LISTS
-
 create_table_queries = [log_staging_table_create,
                         song_staging_table_create,
                         user_table_create,
