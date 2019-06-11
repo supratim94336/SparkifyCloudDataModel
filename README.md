@@ -140,11 +140,10 @@ queries (already some pre-written there)
     - execute block by block to run the queries
 
 ### Warning
-<p>
-    <span style="color:red">Do not share your AWS KEY and AWS SECRET in
-    github! You will get calls from DC right away! And trust me on this
-    </span>.
- </p>
+<span style="color:red">
+    Do not share your AWS KEY and AWS SECRET in github! You will get 
+    calls from DC right away! And trust me on this
+</span>
  
 ### Authors
 * **Supratim Das** - *Initial work*
