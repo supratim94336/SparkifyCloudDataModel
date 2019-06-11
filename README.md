@@ -33,9 +33,12 @@ repository
 #### Prerequisites
 - One should have anaconda/miniconda installed in his/her machine
 - Signup for an aws account
+- Create an IAM User (https://docs.aws.amazon.com/IAM/latest/UserGuide/id_users_create.html)
+   - The user created by you in AWS should have read access to S3, Admin
+   access to Redshift, Admin access to IAM
 - Get your secret key and access key https://docs.aws.amazon.com/general/latest/gr/aws-sec-cred-types.html
    - Download as CSV or save somewhere the generated key and the secret
-   for dwh.cfg file
+     for dwh.cfg file
 - Update dwh.cfg with the key and the secret
 - (optional) One should have an aws account with a redshift cluster
 running and a
@@ -74,16 +77,18 @@ Step 3: Change file name of dwh_dummy_file.cfg to dwh.cfg and insert the
 key and secret from previous steps
 
 ##### Executing the creation and extraction scripts
-*Note: Step 0 and Step 3 are optional if you already created your Redshift
+**Note: Step 0 and Step 3 are optional if you already created your Redshift
 cluster and also created an iam role with read access to
 Amazon S3 manually*  
 
 **Step 0**: Run the below code to create your Redshift database and a
-iam_role in aws having read access to Amazon S3 and attached to the
-created cluster
+iam_role in aws having read access to Amazon S3 and permissions 
+attached to the created cluster
 ```bash
 $ python aws_operate.py --action start
 ```
+copy the DWH_ENDPOINT for <cluster_endpoint_address> and DWH_ROLE_ARN 
+for <iam_role> from the print statements 
 **Step 1**: Run the below code to create tables in your Redshift database
 in aws
 ```bash
@@ -134,5 +139,12 @@ queries (already some pre-written there)
     - fill up your cluster end point and iam role
     - execute block by block to run the queries
 
+### Warning
+<p>
+    <span style="color:red">Do not share your AWS KEY and AWS SECRET in
+    github! You will get calls from DC right away! And trust me on this
+    </span>.
+ </p>
+ 
 ### Authors
 * **Supratim Das** - *Initial work*

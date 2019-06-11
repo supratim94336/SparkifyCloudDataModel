@@ -170,6 +170,7 @@ weekday)
 
 
 # QUERY LISTS
+# ----------------------------------------------------------------------
 create_table_queries = [log_staging_table_create,
                         song_staging_table_create,
                         user_table_create,
@@ -190,3 +191,22 @@ drop_table_queries = [log_staging_table_drop,
                       artist_table_drop,
                       time_table_drop]
 
+
+# AWS COPY Commands
+# ----------------------------------------------------------------------
+copy_song_command = """
+                    COPY {}.{}
+                    FROM '{}' 
+                    iam_role '{}'
+                    region 'us-west-2'
+                    JSON 'auto'
+                    timeformat 'epochmillisecs';
+                    """
+copy_log_command = """
+                   COPY {}.{} 
+                   FROM '{}' 
+                   iam_role '{}' 
+                   region 'us-west-2' 
+                   FORMAT AS JSON '{}' 
+                   timeformat 'epochmillisecs'
+                   """

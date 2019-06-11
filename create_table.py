@@ -6,7 +6,7 @@ import argparse
 
 def create_schema(cur, conn):
     """
-    This function drops all the tables in the database
+    This function creates the schema in the database
     :param cur:
     :param conn:
     :return:
@@ -20,7 +20,7 @@ def create_schema(cur, conn):
 
 def drop_tables(cur, conn):
     """
-    This function drops all the tables in the database
+    This function drops all the existing tables in the database
     :param cur:
     :param conn:
     :return:
@@ -35,7 +35,7 @@ def drop_tables(cur, conn):
 
 def create_tables(cur, conn):
     """
-    This function creates all the tables in the database
+    This function creates all the tables required in the database
     :param cur:
     :param conn:
     :return:
@@ -49,6 +49,7 @@ def create_tables(cur, conn):
 
 
 def main():
+    # get command line arguments
     parser = argparse.ArgumentParser(description='Redshift host')
     parser.add_argument('--host', type=str, help='type an action')
     args = parser.parse_args()
@@ -60,12 +61,15 @@ def main():
                     DWH_DB_PASSWORD,
                     DWH_ENDPOINT,
                     DWH_PORT,
-                    DWH_DB
-    )
+                    DWH_DB)
+
     conn = psycopg2.connect(conn_string)
     cur = conn.cursor()
+    # create schema
     create_schema(cur, conn)
+    # drop existing tables
     drop_tables(cur, conn)
+    # create new tables
     create_tables(cur, conn)
     conn.close()
 
