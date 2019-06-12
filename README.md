@@ -21,9 +21,12 @@ the query-computing very un-intense and requires very less span of time
   mini cloud data warehousing architecture very easily and in minutes
   
 ### The Star Schema that we are going to design here
-
 ![alt text](img/schema.png)
 
+Here you can see the Songplays table is actually the facts and others
+connecting to it are dimensions. It's a simple star schema and the first
+bold and colorful column name is the primary key for this table which 
+are serving as foreign keys in Songplays table.
 
 ### Getting Started
 Download the project:
